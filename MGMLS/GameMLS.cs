@@ -84,7 +84,12 @@ namespace MGMLS
             drawBarraEscudo2 = new Rectangle(0, GameConstants.WINDOW_HEIGHT - 20, GameConstants.WINDOW_WIDTH, 20);
 
             //criar as naves
-            nave1 = new Nave(this.Content, null, drawBarraVida1.Height + 19, Jogador.Jogador1);
+            if (!player1AI) {
+                nave1 = new Nave(this.Content, null, drawBarraVida1.Height + 19, Jogador.Jogador1);
+            }
+            else
+                nave1 = new Nave(this.Content, null, drawBarraVida1.Height + 19, Jogador.AIScripted);
+
             escudoActivoNave1 = nave1.EscudoActivo;
 
             nave2 = new Nave(this.Content, null, GameConstants.WINDOW_HEIGHT - drawBarraVida2.Height - 

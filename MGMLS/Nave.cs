@@ -28,13 +28,13 @@ namespace MGMLS
 
         const int SCREEN_WIDTH_CENTER = GameConstants.WINDOW_WIDTH / 2;
 
-        const int PHASE1_SECONDS = 5;
+        const int PHASE1_SECONDS = 2;
         const long PHASE1_TIME = PHASE1_SECONDS * TimeSpan.TicksPerSecond;
 
         const int PHASE2_SECONDS = 30;
         const long PHASE2_TIME = PHASE2_SECONDS * TimeSpan.TicksPerSecond;
 
-        const int PHASE3_SECONDS = 30;
+        const int PHASE3_SECONDS = 2;
         const long PHASE3_TIME = PHASE3_SECONDS * TimeSpan.TicksPerSecond;
 
         const int PHASE4_SECONDS = 30;
@@ -57,7 +57,7 @@ namespace MGMLS
         int vidaActual, escudoActual, posicaoX, posicaoY;
         long tempoTiros, tempoEscudo, tempoAI;
         readonly int posNaveCentroX, posEscudoCentroX;
-        bool escudoActivo, visivel, disparou, disable, direccaoParaCima, scriptedAI;
+        bool escudoActivo, visivel, disparou, disable, direccaoParaCima, scriptedAI, switchSide;
         Keys teclaEsquerda, teclaDireita, teclaDisparar, teclaActivarEscudo;
         Jogador jogador;
         AIPhase currentAIPhase;
@@ -98,6 +98,7 @@ namespace MGMLS
                 tempoAI = 0;
                 currentAIPhase = AIPhase.Phase1;
                 scriptedAI = true;
+                switchSide = false;
             }
             else
             {
@@ -142,8 +143,8 @@ namespace MGMLS
         }
 
         void Phase1(GameTime gametime) {
-            //do nothing 5 seconds
-            if (tempoAI == PHASE1_TIME) {
+            //do nothing 2 seconds
+            if (tempoAI >= PHASE1_TIME) {
                 currentAIPhase = AIPhase.Phase2;
                 tempoAI = 0;
             }
@@ -153,26 +154,53 @@ namespace MGMLS
 
         void Phase2(GameTime gametime){
             //30 seconds left and right shooting
+            
+            if(tempoAI < PHASE2_TIME && vidaActual > 0 && posicaoX + naveDrawRectangulo.Width + RAPIDEZ <= GameConstants.WINDOW_WIDTH) {
+                posicaoX += RAPIDEZ;
+                naveDrawRectangulo.X += RAPIDEZ;
+                escudoDrawRectangulo.X += RAPIDEZ;
+                naveShape.Center.X += RAPIDEZ;
+                escudoShape.Center.X += RAPIDEZ;
+                if(disparou == false)
+                {
+                    disparou = true;
+                    if (direccaoParaCima)
+                        GameMLS.AdicionarBala(new Bala(texturaBala, jogador, posicaoX + naveDrawRectangulo.Width / 2 - texturaBala.Width / 2,
+                                                       posicaoY, direccaoParaCima));
+                    else
+                        GameMLS.AdicionarBala(new Bala(texturaBala, jogador, posicaoX + naveDrawRectangulo.Width / 2 - texturaBala.Width / 2,
+                                                       posicaoY + naveDrawRectangulo.Height - texturaBala.Height, direccaoParaCima));
+                }
+                
+            }
+            
+            tempoAI += gametime.ElapsedGameTime.Ticks;
+
         }
 
         void Phase3(GameTime gametime){
-            //do nothing 5 seconds with shield
+            //do nothing 2 seconds with shield
+
         }
 
         void Phase4(GameTime gametime){
             //30 seconds left and right shooting with shield
+
         }
 
         void Phase5(GameTime gametime){
             //30 seconds follow and shoot other player with shield
+
         }
 
         void Phase6(GameTime gametime){
             //30 seconds follow, dodge and shoot other player with shield
+
         }
 
         void Phase7(GameTime gametime){
             //30 seconds follow and shoot other player with shield, run when shield is not active
+
         }
 
         //void Phase8(GameTime gametime){
@@ -187,9 +215,9 @@ namespace MGMLS
             {
                 if (scriptedAI) {
                     switch (currentAIPhase) {
-                        case AIPhase.Phase1:
-                            Phase1(gametime);
-                            break;
+                        //case AIPhase.Phase1:
+                        //    Phase1(gametime);
+                        //    break;
                         case AIPhase.Phase2:
                             Phase2(gametime);
                             break;

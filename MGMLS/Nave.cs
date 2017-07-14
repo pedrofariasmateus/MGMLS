@@ -49,8 +49,8 @@ namespace MGMLS
         const int PHASE7_SECONDS = 30;
         const long PHASE7_TIME = PHASE7_SECONDS * TimeSpan.TicksPerSecond;
 
-        const int PHASE8_SECONDS = 600;
-        const long PHASE8_TIME = PHASE8_SECONDS * TimeSpan.TicksPerSecond;
+        //const int PHASE8_SECONDS = 600;
+        //const long PHASE8_TIME = PHASE8_SECONDS * TimeSpan.TicksPerSecond;
 
 
         //variaveis da nave
@@ -94,7 +94,19 @@ namespace MGMLS
             disable = false;
             tempoEscudo = 0;
             tempoTiros = 0;
-            tempoAI = 0;
+            if(j == Jogador.AIScripted) {
+                tempoAI = 0;
+                currentAIPhase = AIPhase.Phase1;
+                scriptedAI = true;
+            }
+            else
+            {
+                tempoAI = -1;
+                currentAIPhase = AIPhase.NoPhase;
+                scriptedAI = false;
+            }
+
+                
 
 
             //determina as teclas da nave conforme o jogador
@@ -130,43 +142,42 @@ namespace MGMLS
         }
 
         void Phase1(GameTime gametime) {
-            //do nothing
-            
+            //do nothing 5 seconds
+            if (tempoAI == PHASE1_TIME) {
+                currentAIPhase = AIPhase.Phase2;
+                tempoAI = 0;
+            }
+            else
+                tempoAI += gametime.ElapsedGameTime.Ticks;
         }
 
-        void Phase2(GameTime gametime)
-        {
-            
+        void Phase2(GameTime gametime){
+            //30 seconds left and right shooting
         }
 
-        void Phase3(GameTime gametime)
-        {
-            
+        void Phase3(GameTime gametime){
+            //do nothing 5 seconds with shield
         }
 
-        void Phase4(GameTime gametime)
-        {
-            
-        }
-        void Phase5(GameTime gametime)
-        {
-            
+        void Phase4(GameTime gametime){
+            //30 seconds left and right shooting with shield
         }
 
-        void Phase6(GameTime gametime)
-        {
-            
+        void Phase5(GameTime gametime){
+            //30 seconds follow and shoot other player with shield
         }
 
-        void Phase7(GameTime gametime)
-        {
-            
+        void Phase6(GameTime gametime){
+            //30 seconds follow, dodge and shoot other player with shield
         }
 
-        void Phase8(GameTime gametime)
-        {
-            
+        void Phase7(GameTime gametime){
+            //30 seconds follow and shoot other player with shield, run when shield is not active
         }
+
+        //void Phase8(GameTime gametime){
+        //    //random?
+        //}
 
 
 
@@ -174,45 +185,84 @@ namespace MGMLS
         {
             if (visivel || disable)
             {
-                
-                if (keyboard.IsKeyDown(teclaDireita) && posicaoX + naveDrawRectangulo.Width + RAPIDEZ <= GameConstants.WINDOW_WIDTH)
-                {
-                    posicaoX += RAPIDEZ;
-                    naveDrawRectangulo.X += RAPIDEZ;
-                    escudoDrawRectangulo.X += RAPIDEZ;
-                    naveShape.Center.X += RAPIDEZ;
-                    escudoShape.Center.X += RAPIDEZ;
+                if (scriptedAI) {
+                    switch (currentAIPhase) {
+                        case AIPhase.Phase1:
+                            Phase1(gametime);
+                            break;
+                        case AIPhase.Phase2:
+                            Phase2(gametime);
+                            break;
+
+                        case AIPhase.Phase3:
+                            Phase3(gametime);
+                            break;
+
+                        case AIPhase.Phase4:
+                            Phase4(gametime);
+                            break;
+
+                        case AIPhase.Phase5:
+                            Phase5(gametime);
+                            break;
+
+                        case AIPhase.Phase6:
+                            Phase6(gametime);
+                            break;
+
+                        case AIPhase.Phase7:
+                            Phase7(gametime);
+                            break;
+
+                        //case AIPhase.Phase8:
+                        //    Phase8(gametime);
+                        //    break;
+                        
+                    }
+
+                }
+                else {
+                    if (keyboard.IsKeyDown(teclaDireita) && posicaoX + naveDrawRectangulo.Width + RAPIDEZ <= GameConstants.WINDOW_WIDTH)
+                    {
+                        posicaoX += RAPIDEZ;
+                        naveDrawRectangulo.X += RAPIDEZ;
+                        escudoDrawRectangulo.X += RAPIDEZ;
+                        naveShape.Center.X += RAPIDEZ;
+                        escudoShape.Center.X += RAPIDEZ;
+                    }
+
+                    if (keyboard.IsKeyDown(teclaEsquerda) && posicaoX - RAPIDEZ >= 0)
+
+                    {
+                        posicaoX -= RAPIDEZ;
+                        naveDrawRectangulo.X -= RAPIDEZ;
+                        escudoDrawRectangulo.X -= RAPIDEZ;
+                        naveShape.Center.X -= RAPIDEZ;
+                        escudoShape.Center.X -= RAPIDEZ;
+                    }
+
+
+                    if (keyboard.IsKeyDown(teclaDisparar) && vidaActual > 0 && disparou == false)
+                    {
+                        disparou = true;
+                        if (direccaoParaCima)
+                            GameMLS.AdicionarBala(new Bala(texturaBala, jogador, posicaoX + naveDrawRectangulo.Width / 2 - texturaBala.Width / 2,
+                                                           posicaoY, direccaoParaCima));
+                        else
+                            GameMLS.AdicionarBala(new Bala(texturaBala, jogador, posicaoX + naveDrawRectangulo.Width / 2 - texturaBala.Width / 2,
+                                                           posicaoY + naveDrawRectangulo.Height - texturaBala.Height, direccaoParaCima));
+                    }
+
+
+                    if (keyboard.IsKeyDown(teclaActivarEscudo) && tempoEscudo <= 0 && escudoActivo == false)
+                    {
+                        escudoActivo = true;
+                        escudoActual = ESCUDO;
+                        tempoEscudo = TEMPO_ARREFECIMENTO_ESCUDO;
+                    }
+                    
                 }
                 
-                if (keyboard.IsKeyDown(teclaEsquerda) && posicaoX - RAPIDEZ >= 0)
-
-                {
-                    posicaoX -= RAPIDEZ;
-                    naveDrawRectangulo.X -= RAPIDEZ;
-                    escudoDrawRectangulo.X -= RAPIDEZ;
-                    naveShape.Center.X -= RAPIDEZ;
-                    escudoShape.Center.X -= RAPIDEZ;
-                }
-
-
-                if (keyboard.IsKeyDown(teclaDisparar) && vidaActual > 0 && disparou == false)
-                {
-                    disparou = true;
-                    if(direccaoParaCima)
-                    GameMLS.AdicionarBala(new Bala(texturaBala, jogador, posicaoX + naveDrawRectangulo.Width / 2 - texturaBala.Width / 2,
-                                                   posicaoY, direccaoParaCima));
-                    else
-                        GameMLS.AdicionarBala(new Bala(texturaBala, jogador, posicaoX + naveDrawRectangulo.Width / 2 - texturaBala.Width / 2,
-                                                       posicaoY + naveDrawRectangulo.Height - texturaBala.Height, direccaoParaCima));
-                }
-
-
-                if (keyboard.IsKeyDown(teclaActivarEscudo) && tempoEscudo <= 0 && escudoActivo == false)
-                {
-                    escudoActivo = true;
-                    escudoActual = ESCUDO;
-                    tempoEscudo = TEMPO_ARREFECIMENTO_ESCUDO;
-                }
 
 
                 if (disparou == true)

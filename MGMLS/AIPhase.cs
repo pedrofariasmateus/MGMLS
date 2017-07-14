@@ -8,6 +8,7 @@ namespace MGMLS
 {
     public enum AIPhase
     {
+        NoPhase,
         Phase1,
         Phase2,
         Phase3,

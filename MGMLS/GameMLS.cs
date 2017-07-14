@@ -29,13 +29,14 @@ namespace MGMLS
 
         //variaveis do jogo
         int vidaNave1, vidaNave2, escudoNave1, escudoNave2, pontosNave1, pontosNave2, numeroRondas;
-        bool escudoActivoNave1, escudoActivoNave2, playerAI;
+        bool escudoActivoNave1, escudoActivoNave2, player1AI;
 
         //sons do jogo
         //ainda por fazer no fim
 
         public GameMLS()
         {
+            //initialize graphics
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
@@ -74,7 +75,7 @@ namespace MGMLS
             texturaBarraEscudo = Content.Load<Texture2D>("img/barra_escudo");
 
             //determinar se o jogador 1 trata-se de um scripted AI 
-            playerAI = true;
+            player1AI = true;
 
             //criar as barras
             drawBarraVida1 = new Rectangle(0, 0, texturaBarraVida.Width, 20);

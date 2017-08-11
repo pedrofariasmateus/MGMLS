@@ -84,11 +84,11 @@ namespace MGMLS
             drawBarraEscudo2 = new Rectangle(0, GameConstants.WINDOW_HEIGHT - 20, GameConstants.WINDOW_WIDTH, 20);
 
             //criar as naves
-            if (!player1AI) {
-                nave1 = new Nave(this.Content, null, drawBarraVida1.Height + 19, Jogador.Jogador1);
+            if (player1AI) {
+                nave1 = new Nave(this.Content, null, drawBarraVida1.Height + 19, Jogador.AIScripted);
             }
             else
-                nave1 = new Nave(this.Content, null, drawBarraVida1.Height + 19, Jogador.AIScripted);
+                nave1 = new Nave(this.Content, null, drawBarraVida1.Height + 19, Jogador.Jogador1);
 
             escudoActivoNave1 = nave1.EscudoActivo;
 
@@ -253,7 +253,7 @@ namespace MGMLS
                 else
                     pontosNave1++;
 
-                limparBalas();
+                LimparBalas();
 
                
                 //if (pontosNave1 == numeroRondas)
@@ -343,7 +343,7 @@ namespace MGMLS
             balas.Add(bala);
         }
 
-        public static void limparBalas()
+        public static void LimparBalas()
         {
             balas.Clear();
         }

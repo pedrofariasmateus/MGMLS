@@ -57,7 +57,7 @@ namespace MGMLS
         int vidaActual, escudoActual, posicaoX, posicaoY;
         long tempoTiros, tempoEscudo, tempoAI;
         readonly int posNaveCentroX, posEscudoCentroX;
-        bool escudoActivo, visivel, disparou, disable, direccaoParaCima, scriptedAI, switchSide;
+        bool escudoActivo, visivel, disparou, disable, scriptedAI, switchSide;
         Keys teclaEsquerda, teclaDireita, teclaDisparar, teclaActivarEscudo;
         Jogador jogador;
         AIPhase currentAIPhase;
@@ -106,9 +106,7 @@ namespace MGMLS
                 currentAIPhase = AIPhase.NoPhase;
                 scriptedAI = false;
             }
-
-                
-
+            
 
             //determina as teclas da nave conforme o jogador
             if (Jogador.Jogador1 == jogador) {
@@ -116,7 +114,6 @@ namespace MGMLS
                 teclaDireita = Keys.L;
                 teclaDisparar = Keys.N;
                 teclaActivarEscudo = Keys.M;
-                direccaoParaCima = false;
             }
 
             else if (Jogador.Jogador2 == jogador)
@@ -125,7 +122,6 @@ namespace MGMLS
                 teclaDireita = Keys.Right;
                 teclaDisparar = Keys.Space;
                 teclaActivarEscudo = Keys.C;
-                direccaoParaCima = true;
             }
 
             //cria um novo rectangulo de desenho para a nave e o escudo
@@ -154,37 +150,156 @@ namespace MGMLS
 
         void Phase2(GameTime gametime){
             //30 seconds left and right shooting
-            
-            if(tempoAI < PHASE2_TIME && vidaActual > 0 && posicaoX + naveDrawRectangulo.Width + RAPIDEZ <= GameConstants.WINDOW_WIDTH) {
-                posicaoX += RAPIDEZ;
-                naveDrawRectangulo.X += RAPIDEZ;
-                escudoDrawRectangulo.X += RAPIDEZ;
-                naveShape.Center.X += RAPIDEZ;
-                escudoShape.Center.X += RAPIDEZ;
-                if(disparou == false)
+
+            if (!switchSide) {
+
+
+                if (tempoAI < PHASE2_TIME && vidaActual > 0 && posicaoX + naveDrawRectangulo.Width + RAPIDEZ <= GameConstants.WINDOW_WIDTH)
                 {
-                    disparou = true;
-                    if (direccaoParaCima)
-                        GameMLS.AdicionarBala(new Bala(texturaBala, jogador, posicaoX + naveDrawRectangulo.Width / 2 - texturaBala.Width / 2,
-                                                       posicaoY, direccaoParaCima));
-                    else
-                        GameMLS.AdicionarBala(new Bala(texturaBala, jogador, posicaoX + naveDrawRectangulo.Width / 2 - texturaBala.Width / 2,
-                                                       posicaoY + naveDrawRectangulo.Height - texturaBala.Height, direccaoParaCima));
+                    posicaoX += RAPIDEZ;
+                    naveDrawRectangulo.X += RAPIDEZ;
+                    escudoDrawRectangulo.X += RAPIDEZ;
+                    naveShape.Center.X += RAPIDEZ;
+                    escudoShape.Center.X += RAPIDEZ;
+                    if (disparou == false)
+                    {
+                        disparou = true;
+                        if (Jogador.Jogador2 == jogador)
+                            GameMLS.AdicionarBala(new Bala(texturaBala, jogador, posicaoX + naveDrawRectangulo.Width / 2 - texturaBala.Width / 2,
+                                                           posicaoY, true));
+                        else
+                            GameMLS.AdicionarBala(new Bala(texturaBala, jogador, posicaoX + naveDrawRectangulo.Width / 2 - texturaBala.Width / 2,
+                                                           posicaoY + naveDrawRectangulo.Height - texturaBala.Height, false));
+                    }
+
                 }
-                
+                else
+                    switchSide = true;
             }
-            
-            tempoAI += gametime.ElapsedGameTime.Ticks;
+
+            else {
+
+                if (tempoAI < PHASE2_TIME && vidaActual > 0 && posicaoX - RAPIDEZ >= 0)
+                {
+                    posicaoX -= RAPIDEZ;
+                    naveDrawRectangulo.X -= RAPIDEZ;
+                    escudoDrawRectangulo.X -= RAPIDEZ;
+                    naveShape.Center.X -= RAPIDEZ;
+                    escudoShape.Center.X -= RAPIDEZ;
+                    if (disparou == false)
+                    {
+                        disparou = true;
+                        if (Jogador.Jogador2 == jogador)
+                            GameMLS.AdicionarBala(new Bala(texturaBala, jogador, posicaoX + naveDrawRectangulo.Width / 2 - texturaBala.Width / 2,
+                                                           posicaoY, true));
+                        else
+                            GameMLS.AdicionarBala(new Bala(texturaBala, jogador, posicaoX + naveDrawRectangulo.Width / 2 - texturaBala.Width / 2,
+                                                           posicaoY + naveDrawRectangulo.Height - texturaBala.Height, false));
+                    }
+
+                }
+                else
+                    switchSide = false;
+
+            }
+
+            if (tempoAI >= PHASE2_TIME)
+            {
+                currentAIPhase = AIPhase.Phase3;
+                tempoAI = 0;
+            }
+            else
+                tempoAI += gametime.ElapsedGameTime.Ticks;
 
         }
 
         void Phase3(GameTime gametime){
             //do nothing 2 seconds with shield
-
+            if (tempoEscudo <= 0 && escudoActivo == false)
+            {
+                escudoActivo = true;
+                escudoActual = ESCUDO;
+                tempoEscudo = TEMPO_ARREFECIMENTO_ESCUDO;
+            }
+            if (tempoAI >= PHASE3_TIME)
+            {
+                currentAIPhase = AIPhase.Phase4;
+                tempoAI = 0;
+            }
+            else
+                tempoAI += gametime.ElapsedGameTime.Ticks;
         }
 
         void Phase4(GameTime gametime){
             //30 seconds left and right shooting with shield
+            if (tempoEscudo <= 0 && escudoActivo == false)
+            {
+                escudoActivo = true;
+                escudoActual = ESCUDO;
+                tempoEscudo = TEMPO_ARREFECIMENTO_ESCUDO;
+            }
+
+            if (!switchSide)
+            {
+
+
+                if (tempoAI < PHASE4_TIME && vidaActual > 0 && posicaoX + naveDrawRectangulo.Width + RAPIDEZ <= GameConstants.WINDOW_WIDTH)
+                {
+                    posicaoX += RAPIDEZ;
+                    naveDrawRectangulo.X += RAPIDEZ;
+                    escudoDrawRectangulo.X += RAPIDEZ;
+                    naveShape.Center.X += RAPIDEZ;
+                    escudoShape.Center.X += RAPIDEZ;
+                    if (disparou == false)
+                    {
+                        disparou = true;
+                        if (Jogador.Jogador2 == jogador)
+                            GameMLS.AdicionarBala(new Bala(texturaBala, jogador, posicaoX + naveDrawRectangulo.Width / 2 - texturaBala.Width / 2,
+                                                           posicaoY, true));
+                        else
+                            GameMLS.AdicionarBala(new Bala(texturaBala, jogador, posicaoX + naveDrawRectangulo.Width / 2 - texturaBala.Width / 2,
+                                                           posicaoY + naveDrawRectangulo.Height - texturaBala.Height, false));
+                    }
+
+                }
+                else
+                    switchSide = true;
+            }
+
+            else
+            {
+
+                if (tempoAI < PHASE4_TIME && vidaActual > 0 && posicaoX - RAPIDEZ >= 0)
+                {
+                    posicaoX -= RAPIDEZ;
+                    naveDrawRectangulo.X -= RAPIDEZ;
+                    escudoDrawRectangulo.X -= RAPIDEZ;
+                    naveShape.Center.X -= RAPIDEZ;
+                    escudoShape.Center.X -= RAPIDEZ;
+                    if (disparou == false)
+                    {
+                        disparou = true;
+                        if (Jogador.Jogador2 == jogador)
+                            GameMLS.AdicionarBala(new Bala(texturaBala, jogador, posicaoX + naveDrawRectangulo.Width / 2 - texturaBala.Width / 2,
+                                                           posicaoY, true));
+                        else
+                            GameMLS.AdicionarBala(new Bala(texturaBala, jogador, posicaoX + naveDrawRectangulo.Width / 2 - texturaBala.Width / 2,
+                                                           posicaoY + naveDrawRectangulo.Height - texturaBala.Height, false));
+                    }
+
+                }
+                else
+                    switchSide = false;
+
+            }
+
+            if (tempoAI >= PHASE4_TIME)
+            {
+                currentAIPhase = AIPhase.Phase5;
+                tempoAI = 0;
+            }
+            else
+                tempoAI += gametime.ElapsedGameTime.Ticks;
 
         }
 
@@ -215,9 +330,9 @@ namespace MGMLS
             {
                 if (scriptedAI) {
                     switch (currentAIPhase) {
-                        //case AIPhase.Phase1:
-                        //    Phase1(gametime);
-                        //    break;
+                        case AIPhase.Phase1:
+                            Phase1(gametime);
+                            break;
                         case AIPhase.Phase2:
                             Phase2(gametime);
                             break;
@@ -273,12 +388,12 @@ namespace MGMLS
                     if (keyboard.IsKeyDown(teclaDisparar) && vidaActual > 0 && disparou == false)
                     {
                         disparou = true;
-                        if (direccaoParaCima)
+                        if (Jogador.Jogador2 == jogador)
                             GameMLS.AdicionarBala(new Bala(texturaBala, jogador, posicaoX + naveDrawRectangulo.Width / 2 - texturaBala.Width / 2,
-                                                           posicaoY, direccaoParaCima));
+                                                           posicaoY, true));
                         else
                             GameMLS.AdicionarBala(new Bala(texturaBala, jogador, posicaoX + naveDrawRectangulo.Width / 2 - texturaBala.Width / 2,
-                                                           posicaoY + naveDrawRectangulo.Height - texturaBala.Height, direccaoParaCima));
+                                                           posicaoY + naveDrawRectangulo.Height - texturaBala.Height, false));
                     }
 
 

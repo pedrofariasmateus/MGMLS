@@ -130,7 +130,7 @@ namespace MGMLS
                 texturaEscudo.Width, texturaEscudo.Height);
 
             centerNave = new Point2(posNaveCentroX + TexturaNave.Width / 2, posicaoY + TexturaNave.Height / 2);
-            centerEscudo = new Point2(posEscudoCentroX + TexturaEscudo.Width / 2, posicaoX + TexturaEscudo.Height / 2);
+            centerEscudo = new Point2(posEscudoCentroX + TexturaEscudo.Width / 2, posicaoY + TexturaEscudo.Height / 2);
 
             //cria novas figuras geometricas para detectar colisoes
             naveShape = new CircleF(centerNave, texturaNave.Width/2);
@@ -525,6 +525,13 @@ namespace MGMLS
             tempoEscudo = 0;
             tempoTiros = 0;
             disable = false;
+            if (scriptedAI)
+            {
+                tempoAI = 0;
+                currentAIPhase = AIPhase.Phase1;
+                scriptedAI = true;
+                switchSide = false;
+            }
         }
 
         public bool EscudoCollidesWith(CircleF otherCircle) {

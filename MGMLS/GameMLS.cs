@@ -191,25 +191,26 @@ namespace MGMLS
                 {
                     if (nave2.EscudoActivo)
                     {
-                        if (nave2.Forma.Intersects(bala.Forma) && bala.Pertence == Jogador.Jogador1 &&
+                        if (nave2.EscudoForma.Intersects(bala.Forma) && (bala.Pertence == Jogador.Jogador1 || bala.Pertence == Jogador.AIScripted) &&
                             nave2.EscudoCollidesWith(bala.shapeBala))
-                        //IntersectPixels(nave2.EscudoForma, nave2.TexturaEscudo, bala.Forma, bala.TexturaBala))
+                        //IntersectPixels(nave1.EscudoForma, nave1.TexturaEscudo, bala.Forma, bala.TexturaBala))
                         {
-                                nave2.Escudo -= bala.Dano;
-                                bala.Visivel = false;
-                                drawBarraEscudo2.Width = nave2.PercentagemEscudoBarra;
+                            nave2.Escudo -= bala.Dano;
+                            bala.Visivel = false;
+                            drawBarraEscudo2.Width = nave2.PercentagemEscudoBarra;
                         }
                     }
                     else
                     {
-                        if (nave2.EscudoForma.Intersects(bala.Forma) && nave2.EscudoActivo && bala.Pertence == Jogador.Jogador1 &&
+                        if (nave2.Forma.Intersects(bala.Forma) && (bala.Pertence == Jogador.Jogador1 || bala.Pertence == Jogador.AIScripted) &&
                             nave2.NaveCollidesWith(bala.shapeBala))
-                            //IntersectPixels(nave2.Forma, nave2.TexturaNave, bala.Forma, bala.TexturaBala))
+                        //IntersectPixels(nave2.Forma, nave2.TexturaNave, bala.Forma, bala.TexturaBala))
                         {
                             nave2.Vida -= bala.Dano;
                             bala.Visivel = false;
                             drawBarraVida2.Width = nave2.PercentagemVidaBarra;
                         }
+
                     }
                 }
             }

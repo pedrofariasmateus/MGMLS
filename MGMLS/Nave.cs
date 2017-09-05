@@ -305,22 +305,48 @@ namespace MGMLS
 
         void Phase5(GameTime gametime){
             //30 seconds follow and shoot other player with shield
+            if (tempoEscudo <= 0 && escudoActivo == false)
+            {
+                escudoActivo = true;
+                escudoActual = ESCUDO;
+                tempoEscudo = TEMPO_ARREFECIMENTO_ESCUDO;
+            }
 
+
+            if (tempoAI >= PHASE5_TIME)
+            {
+                currentAIPhase = AIPhase.Phase6;
+                tempoAI = 0;
+            }
+            else
+                tempoAI += gametime.ElapsedGameTime.Ticks;
         }
 
         void Phase6(GameTime gametime){
             //30 seconds follow, dodge and shoot other player with shield
-
+            if (tempoAI >= PHASE6_TIME)
+            {
+                currentAIPhase = AIPhase.Phase7;
+                tempoAI = 0;
+            }
+            else
+                tempoAI += gametime.ElapsedGameTime.Ticks;
         }
 
         void Phase7(GameTime gametime){
             //30 seconds follow and shoot other player with shield, run when shield is not active
-
+            if (tempoAI >= PHASE7_TIME)
+            {
+                currentAIPhase = AIPhase.Phase8;
+                tempoAI = 0;
+            }
+            else
+                tempoAI += gametime.ElapsedGameTime.Ticks;
         }
 
-        //void Phase8(GameTime gametime){
+        void Phase8(GameTime gametime){
         //    //random?
-        //}
+        }
 
 
 
@@ -357,9 +383,9 @@ namespace MGMLS
                             Phase7(gametime);
                             break;
 
-                        //case AIPhase.Phase8:
-                        //    Phase8(gametime);
-                        //    break;
+                        case AIPhase.Phase8:
+                            Phase8(gametime);
+                            break;
                         
                     }
 
